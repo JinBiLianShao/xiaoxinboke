@@ -1,0 +1,483 @@
+title: 某公司C语言面试题详解
+author: 连思鑫
+tags:
+  - C语言
+  - 面试题
+categories:
+  - C语言
+  - 面试题
+  - 学习笔记
+date: 2021-12-08 17:01:00
+---
+# 某公司C语言面试题详解
+
+## 一、单项选择题
+
+1.对于一个正常运行和正常退出的 C 程序，以下叙述正确的是(	)。
+
+ A. 程序从 main 函数第一条可执行语句开始执行，在 main 函数结束
+ 
+ B. 程序的执行总是从程序的第一个函数开始，在 main 函数结束
+ 
+ C. 程序的执行总是从 main 函数开始，在最后一个函数中结束
+ 
+ D. 从程序的第一个函数开始，在程序的最后一个函数中结束
+ 
+ **题解：** C语言程序的执行过程是先从main函数开始，main函数是C语言程序的入口。一段C语言代码的编译过程是由上至下逐行编译，但编译不是执行，大家不要弄混了哦！如何判断一个函数有没有在该程序里执行，可以看main函数中是否调用了它。例如：
+ 
+          int a(){
+              printf("我是一个a函数！我被执行了\n");
+          }
+          int b(){
+              printf("我是一个b函数，我被执行了\n");
+          }
+          main(){
+          a();
+          }
+运行结果如下：
+
+          我是一个a函数！我被执行了
+          D:\IT技术\C&C++\面试\Debug\面试.exe (进程 16520)已退出
+
+由上可以看出虽然b函数被编译，但它没有被执行。故A选项正确！
+ 
+2.有如下程序片段：
+
+          #include<stdio.h> 
+          main( )
+          {
+          int	a = 5, b = 4, x, y;
+          x = 2 * a++;
+          printf("a=%d, x=%d\n", a, x);
+          y = --b * 2;
+          printf("b=%d, y=%d\n", b, y);
+          }
+
+ 则正确的执行结果是(  )。
+ 
+ A. a=6, x=10, b=3, y=8
+ 
+ B. a=6, x=10, b=3, y=6
+ 
+ C. a=6, x=12, b=3, y=6
+ 
+ D. 以上均不对
+ 
+**题解：** 对上述代码进行分析，定义了整数型a，b，x，y。其中a的值是5，b的值是4。给出算术表达式 x = 2 * a++。看样子考查的是自增自减的运用和优先级。自增自减的优先级高于乘法运算符，故此先进行自增自减运算。a=5, ++在a的后面，也就是先运算后自增。于是x=2*5=10,a=5+1=6。第二个的自减符在前面，先自减在运算，也就是y=(4-1)*2=6,b=4-1=3。故选B！
+
+3.有以下程序片断：
+
+	typedef struct
+    {
+    int b; int p;
+    }TYPEA;
+    void f(TYPEA c)
+    {
+    c.b += 1;
+    c.p += 2;
+    }
+    main()
+    {
+    TYPEA a ={1, 2};
+    f(a);
+    printf("%d,%d\n", a.b, a.p);
+    }
+则程序运行后的输出结果是（  ）。
+
+A. 2,3
+
+B. 2,4
+
+C. 1,4
+
+D. 1,2
+
+**题解：** typedef struct{int b; int p;}TYPEA;这段定义了一个结构体，结构体里放了两个整数型b，p。然后又定义了一个无返回值含参的函数f，调用了结构体做了算术运算。然后是主函数main。梳理一下执行过程，先声明变量a,类型为TYPEA并赋值1，2。这个时候结构体的b=1,p=2。紧接着将a变量传递给f函数。但在f函数里又声明了一个变量c，在这个c里发生了c.b=1+1=2,c.p=2+2=4。**但是！这个题里有两个坑。1.f函数并无返回值。2.最后输出引用的是a变量里的值，这个a变量并没有发生变化。**故这个题a.b=1,a.p=2。选D！
+
+4.对于以下程序片段，描述正确的是(  )。
+
+	int x = -1; 
+    do
+    {
+    x = x * x;
+    }while(!x);
+    
+A. 是死循环
+
+B. 循环执行两次
+
+C. 循环执行一次
+
+D. 有语法错误
+
+**题解：** 考查do while循环，这个语法在C里面用的不多啊，为啥会考到呢？先分析，定义了x=-1,x*x是负负得正变成1。后面判断加了个！（逻辑非）。如果不加是死循环，加了就从假变成真，就执行一次。选C！
+
+5.一个指针数组的定义为（  ）。
+
+A. int (*ptr)[5]；	
+
+B. int *ptr[5]；
+
+C. int *(ptr[5])；	
+
+D. int ptr[5]；
+
+**题解：** 这个考查指针数组，就一个写法 *name[数]。要注意的是这个[]里只能是数，不能是变量。如果你不想把它写死，那就在最开头用上#define或者const int。答案选B！
+
+## 二、写出下列程序的运行结果。
+
+1.
+
+	#include <stdio.h> 
+    main()
+    {
+    int n = 0; 
+    char c;
+    while((c=getchar( )) != '\n')
+    {
+      if (c>='0' && c<='9')
+      n = n * 10 + c - '0';
+    }
+    printf("value=%d\n", n);
+    }
+程序运行时输入：2008，则程序运行结果是：
+
+**题解：** 先看核心部分，while((c=getchar( )) != '\n')将输入的字符串逐一提取，碰到\n换行符结束循环。if (c>='0' && c<='9')判断这个字符串是不是0到9的字符，也就是判断它是不是个数。n = n * 10 + c - '0'这句话还要进一步拆分，n * 10是为了给后面的字符腾个空，是十进制的进位功能。c - '0'是为了进制转换，要不然直接输出整型，输出的是ASCII码的值。所以，这个就把字符串变成个整数型在输出呗。结果还是2008，只不过是整数型的2008。
+
+2.
+
+    #include <stdio.h> 
+    main()
+    {
+        int a = 1, b = 0;
+        switch (a)
+        {
+        case 1:
+            switch (b)
+            {
+            case 0: a++;
+                b++;
+                printf("a=%d, b=%d\n", a, b); break;
+            case 1: a++;
+                b++;
+                printf("a=%d, b=%d\n", a, b); break;
+            }
+        case 2: a++;
+            b++;
+            printf("a=%d, b=%d\n", a, b); break;
+        }
+    }
+
+运行结果是：
+
+**题解：** 嵌套选择？一步一步来，首先a = 1，走第一条线，遇到判断b，b = 0，继续第一条线，a++,a = 2, b++ , b = 1, 输出后跳出循环 **（注：这里跳出的是里面的结构体，不是全部哦~ 至于为啥不是整个跳出？因为一号线它就没写跳出！）** 然后跑到2号线，又经历了一次a++,b++。a = 2+1=3,b=1+1=2。所以打印了两次，分别是a=2, b=1，a=3, b=2。
+
+
+3.
+
+      #include<stdio.h>
+      #include<string.h> 
+      main()
+      {
+      printf("%d\n", strlen("IBM\n012\1\\"));
+      }
+    
+程序运行结果是：
+
+**题解：** strlen函数是用来计算字符串长度的，其中前面带反斜杠的加后面的一位总共占一个字符。所以是9。至于为啥？转义字符在ASCII码里就占一个字符。
+
+4.
+
+      #include<stdio.h> 
+      main()
+      {
+      int i, a[10]; // 定义i和数组为10的a
+      int *p; // 声明一个指针变量
+      p = a; // 把数组a的地址放到了指针p中
+      for (i = 0; i < 10; i++) // 循环10次
+      {
+          scanf("%d", p + i); //输入函数，并把输入的值放进连续地址的数组a中。
+      }
+      for (p = a; p < a + 10; p++) // 把a数组的地址在放进去p指针里，让p指针历遍a数组（10个）
+      {
+          printf("%d\t", *p); // 逐一根据地址拿值
+      }
+      printf("\n"); // 换个行
+      for (p = a; p < a + 10; p++) // 1234再来一次，同上
+      {
+          if (*p % 2) printf("%d\t", *p); // 对2其余，求奇数
+      }
+      }
+
+程序运行时输入： 1 2 3 4 5 6 7 8 9 10 则程序运行结果为：
+
+**题解：** 直接在代码上写注释吧。题解再补充一些知识。**补充知识：关于数组a赋值给指针p时，p里面放的是数组a的起始地址，数组一旦申请地址空间都是连续的，所以知道起始地址就可以根据元素个数往下找了。数组虽好，可不要越界哦！**
+
+5.
+
+      #include <stdio.h> 
+      int mod(int x, int y) // 声明一个叫mod的函数，含参且返回值是int型
+      {
+          return (x % y); // 返回 x 与 y 的取余
+      }
+      main()
+      {
+          int	m, n, r; 
+          scanf("%d %d", &m, &n); 
+          r = mod(m, n); // 将m，n的值传参给mod函数，返回值赋给r
+          while (r != 0) //判断r是不是0
+          {
+              m = n; 
+              n = r;
+              r = mod(m, n);
+          }
+          printf("The Result is ：%d\n", n);
+      }
+
+程序运行时输入： 81 18  则运行结果是：
+
+**题解：** 输入的值传递到m和n，m = 81， n = 18，然后传参到mod，对81%18=9。所以r=9。r!=0,故m=n=18,n=r=9,r=9。所以结果是9。
+
+## 三、阅读程序，在标有下划线的空白处填入适当的表达式或语句，使程序完整并符合题目要求。（ 8 分，每空 1 分）
+
+1.以下程序将输入的十进制数以十六进制的形式输出。
+
+      #include <stdio.h> 
+      main()
+      {
+      char b[17] = { "0123456789ABCDEF" }; //给定16进制表示符		
+      int c[64], d, i = 0, base = 16; 	
+      long number;
+      printf("请输入一个十进制数\n"); 
+      scanf_s("%ld", &number); //输入长整形十进制
+      do {
+          c[i] = number%base; //对16取余获得余数，这个余数可以对应下标，变成16进制每一位的表示值。
+          number = number / base; //在这里除去16进制的低位，循环从而进一步表示高位
+          i++;
+      } while (number != 0);
+      printf("对应的十六进制数为: \n"); 
+      for (--i; i>=0 ; --i)  //由高位到低位逐一输出
+      {
+          d = c[i]; //取出后放入d
+          printf("%c", b[d]); //查字典，对应16进制表示符输入下标
+      }
+      printf("\n");
+      }
+
+2．用户从键盘任意输入一个数字表示月份值 n，程序显示该月份对应的英文表示，若 n 不在 1～12 之间，则输出“Illegal month”。
+
+    #include <stdio.h> 
+    main()
+    {
+    int n;
+    static char monthName[][20] = {
+    "Illegal month", "January","February","March",
+        "April", "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    };
+    printf("Input month number:"); 
+    scanf("%d", &n);
+    if ((n<=12)&&(n>=1))  //判断输入的月数是否正确
+    {
+        printf("month %d is %s\n", n, monthName[n]); //输出数组
+    }
+    else
+    {
+        printf("%s\n", monthName[0]); 
+    }
+    }
+    
+## 四、在下面给出的 4 个程序中，共有 16 处错误（包括语法错误和逻辑错误），请找出其中的错误，并改正之。（ 30 分， 每找对 1 个错误， 加 1 分， 每修改正确 1 个错误， 再加 1 分。只要找对 15 个即可，多找不加分。）
+
+**这让我咋写？我给bug全改完吧，最烦找bug和改bug了，代码书写规范不仅方便自己更方便他人**
+
+1．下面程序实现的是折半查找算法。
+
+    #include <stdio.h> 
+    main()
+    {
+    int	up = 9, low = 0, mid, found=0, find; //up是表示最后的下标，low是最初的数组下标，从0开始。mid用来放查找结果下标，find是放输入数据，found我愣是没看懂它存在的意义
+    int	a[10] = { 1, 5, 6, 9, 11, 17, 25, 34, 38, 41 };//数据集
+    scanf_s("%d" , &find); //输入
+    printf("\n");
+    while (up >= low && !found)
+    {
+        mid = (up + low) / 2;
+        if (a[mid] == find)
+        {
+            found = 1;  //看到这看懂了...用来跳出的,但你都写break了，它有啥意义？
+            break;
+        }
+        else if (a[mid] < find) 
+            low = mid + 1;
+        else up = mid - 1;
+    }
+		
+    if (found)	
+        printf("found	number	is	%d th", mid); 
+    else
+        printf("no	found");
+    }
+    
+2．下面程序模拟了骰子的 6000 次投掷，用 rand 函数产生 1～6 之间的随机数 face，然后统计 1～6 每一面出现的次数存放到数组 frequency 中。
+
+    #include <stdlib.h>
+    #include <time.h>
+    #include <stdio.h>
+    main()
+    {
+        int	face, roll, frequency[7] = { 0 };
+        srand(time(NULL));
+        for (roll = 1; roll <= 6000; roll++)
+        {
+            face = rand() % 6 + 1;
+            ++frequency[face];
+        }
+        printf("%4s%17s\n", "Face", "Frequency"); 
+        for (face = 1; face <= 6; face++)
+        {
+            printf("%4d%17d\n", face, frequency[face]);
+        }
+    }
+    
+3．计算十个数据的平均值。
+
+      #include <stdio.h> 
+      void main(void)
+      {
+      int i, sum=0; // sum初始化
+      float	avg;
+      int	sc[10], * p = sc; 
+      for (i = 0; i < 10; i++)
+      {
+          scanf("%d", p); 
+          sum += *p;  //累加用户输入值放sum里
+          p++;   //移步下一个内存地址
+      }
+      avg = sum / 10;
+      printf("avg=%f\n", avg);
+      }
+     
+4．编程实现从键盘输入一个字符串，将其字符顺序颠倒后重新存放，并输出这个字符串。（用字符数组实现）
+
+      #include <stdio.h>
+      #include <string.h>
+			
+      void Inverse(char rstr[]); //声明
+			
+      main()
+      {
+          char str[80];
+          printf("Input a string:\n"); 
+          gets(str);
+          Inverse(str);
+          printf("The inversed string is:\n"); 
+          puts(str);
+      }
+					
+      void Inverse(char rstr[])
+      {
+          int i, n; char temp;
+			
+          for (i = 0, n = (strlen(rstr)); i < n; i++, n--)
+          {
+              temp = rstr[i]; 
+              rstr[i] = rstr[n]; 
+              rstr[n] = temp;
+          }
+      }
+      
+
+## 五、编程
+
+1.从键盘任意输入一个 4 位数 x，编程计算 x 的每一位数字相加之和（忽略整数前的正负号）。例如，输入 x 为 1234，则由 1234 分离出其千位 1、百位 2、十位 3、个位 4，然后计算 1+2+3+4=10，并输出 10。(14 分)
+
+        #include<stdio.h>
+        #include<math.h>
+
+        /**
+            题目：1.从键盘任意输入一个 4 位数 x，编程计算 x 的每一位数字相加之和（忽略整数前的正负号）。
+            例如，输入 x 为 1234，则由 1234 分离出其千位 1、百位 2、十位 3、个位 4，然后计算 1+2+3+4=10，并输出 10。
+
+            时间：2021/12/8
+
+            作者：连思鑫
+
+            分析：这个题的重点在于如何拆分进制数，例如1234/1000=1.234（整数型取证）分离出千位，1234-分离出的千位/100就得出了百位数值，往下同理
+        */
+
+        main() {
+            int x1, x2, x3, x4, x, y; //x1~4用来存放各个进制位数的数值，x是用户输入，y放输出结果
+            printf("请输入一个四位数: \n");
+            scanf_s("%d", &x);
+            y = fabs(x); //取个绝对值，防止负数
+            x1 = y / 1000; //千位数分离
+            x2 = (y - (x1 * 1000)) / 100; //百位数分离
+            x3 = (y - (x1 * 1000)-(x2 * 100)) / 10; //十位数分离
+            x4 = y % 10; //个位分离
+            y = x1 + x2 + x3 + x4;
+            printf("位值相加结果为：%d", y);
+        }
+
+2.输入 20 个学生的成绩，求出其中大于平均成绩学生的人数，并对 20 名学生成绩按从高到低进行排序。(14 分)
+
+        #include<stdio.h>
+        #include<math.h>
+
+        /**
+            题目：2.输入 20 个学生的成绩，求出其中大于平均成绩学生的人数，并对 20 名学生成绩按从高到低进行排序。
+
+            时间：2021/12/8
+
+            作者：连思鑫
+
+        */
+        int pingjunshu(int chengji[]);
+        int paixu(int paixu[]);
+
+        int main() {
+            int  i, j, arr[20];
+            int num = 0;
+            for (i = 0; i < 20; i++)
+            {
+                scanf_s("%d", &arr[i]);
+            }
+            j = pingjunshu(arr);
+            // 筛选大于平均数的人数
+            for (i = 0; i < 20; i++)
+            {
+
+                if (arr[i] > j) {
+                    num++;
+                }
+            }
+            printf("大于平均数的人数为%d\n", num);
+            paixu(arr);
+            return 0;
+        }
+
+        // 平均数
+        int pingjunshu(int chengji[]) {
+            int s = 0;
+            for (int i = 0; i < 20; i++)
+            {
+                s = s + chengji[i];
+            }
+
+            s = s / 20;
+            return s;
+        }
+        //排序（冒泡）
+        int paixu(int paixu[]) {
+            int i, j, temp;
+            for (i = 0; i < 20 - 1; i++)
+                for (j = 0; j < 20 - 1 - i; j++)
+                    if (paixu[j] > paixu[j + 1]) {
+                        temp = paixu[j];
+                        paixu[j] = paixu[j + 1];
+                        paixu[j + 1] = temp;
+                    }
+            for (i = 0; i < 20; i++) {
+                printf("%d\n", paixu[i]);
+            }
+        }

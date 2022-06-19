@@ -1,0 +1,814 @@
+title: 常用Linux命令总结
+author: 连思鑫
+tags:
+  - Linux
+  - 命令
+  - 笔记
+categories:
+  - Linux
+date: 2022-03-12 22:09:00
+---
+# 常用Linux命令总结
+因为在做嵌入式C/C++开发，离不开Linux。所以，在此总结一下常用的Linux命令，以免忘记且有利于查询。
+
+
+## 网络 - （以太网和WIFI无线）！！重要！！
+
+>**ps:最近一两周都在使用这玩意啊喂**~
+
+### 1.hostname
+
+hostname 没有选项，显示主机名字
+
+hostname –d 显示机器所属域名
+
+hostname –f 显示完整的主机名和域名
+
+hostname –i 显示当前机器的 ip 地址
+
+>补充：其实使用 “hostname+新的主机名” 命令还可以临时设置主机名,比如hostname newname
+>这样用的好处是，可以临时修改主机名称而不用重启。而通过/etc/sysconfig/network 文件来修改主机名则需要重启才能生效。当然，我们在在执行这个命令后，必须记得手动修改/etc/sysconfig/network 文件里面的 HOSTNAME 的值，以便后续重启生效，这算是一个小技巧哦！
+
+### 2. ping
+
+ping 将数据包发向用户指定地址。当包被接收，目标机器发送返回数据包。ping 主要有两个作用：
+
+1. 用来确认网络连接是畅通的。
+2. 用来查看连接的速度信息。
+
+如果你 ping zhangge.net  它将返回它的 ip 地址 。你可以通过 ctrl+C 来停止命令。
+
+>ps:上一周一直在ping各种ip，回到公司搭建内部局域网估计又要ping来ping去....
+>补充：-c 参数可以定义 ping 的次数，脚本中的网络判断用得比较多。而在 windows 下，则使用-n 参数来定义 ping 次数，如 ping -n 4 zhangge.net
+
+### 3. ifconfig
+这个类是Windows的ipconfig，都是查看用户的网络配置的。
+
+ifconfig是Linux系统中最常用的一个用来显示和设置网络设备的工具。其中“if”是“interface”的缩写。它可以用来设备网卡的状态，或是显示当前的设置。 
+
+下面我们简单地说明常用的命令组合：
+   
+　　 1） 将第一块网卡的IP地址设置为192.168.0.1：
+   
+     ifconfig eth0 192.168.0.1 （格式：ifconfig 网络设备名 IP地址） 
+　　 2） 暂时关闭或启用网卡： 
+   
+     关闭第一块网卡：ifconfig eth0 down 
+     启用第一块网卡：ifconfig eth0 up 
+     
+　　 3） 将第一块网卡的子网掩码设置为255.255.255.0：
+   
+     ifconfig eth0 netmask 255.255.255.0（格式：ifconfig 网络设备名 netmask 子网掩码） 
+　　 我们也可以同时设置IP地址和子网掩码： 
+   
+     ifconfig eth0 192.168.0.1 netmask 255.255.255.0 
+　　 4） 将第一块网卡的广播地址设置为192.168.0.255：
+   
+     ifconfig eth0 –broadcast 192.168.0.255 
+　　 5） 将第一块网卡设置为不接收多播数据包： 
+   
+     ifconifg eth0 allmulti 
+     
+　　 如果要让其接收，则使用命令：
+   
+     ifconfig eth0 -allmulti 
+　　 6） 查看第一块网卡的状态：
+   
+     ifconfig eth0 
+　　 如果要查看所有的网卡状态，则直接使用不带参数的ifconfig命令即可。
+   
+　　 ifconfig输出的状态信息是十分有用的，下面，我们就简单说明一下：
+   
+　　 有几个状态比较重要：
+   
+     ? UP/DOWN：网卡是否启动了，如果是DOWN的话，那肯定无法用的； 
+     ? RX packets中的errors包的数量如果过大说明网卡在接收时有问题； 
+     ? TX packets中的errors包的数量如果过大说明网卡在发送时有问题； 
+
+### 4. iwconfig
+iwconfig 工具与 ifconfig 和 ethtool 类似。是用于无线网卡的。
+
+你可以用他查看设置基本的 Wi-Fi 网络信息,
+
+例如 SSID, channel 和 encryption.还有其他很多配置你也可以查看和修改，, 包括 接收灵敏度, RTS/CTS, 发送数据包的分片大小,以及无线网卡的重传机制。
+
+### 5. nslookup
+nslookup 这个命令在有ip地址时，可以用这个命令来显示主机名，可以找到给定域名的所有 ip 地址。而你必须连接到互联网才能使用这个命令。
+
+例如： nslookup marsge.cn
+
+你也可以使用 nslookup 从 ip 获得主机名或从主机名获得 ip。
+
+### 6. traceroute
+一个方便的工具。可用来查看数据包在提交到远程系统或者网站时候所经过的路由器的 IP 地址、跳数和响应时间。同样你必须链接到互联网才能使用这个命令。
+
+### 7. finger
+查看用户信息。显示用户的登录名字、真实名字以及登录终端的名字和登录权限。这是 unix 一个很老的命令，现在已很少使用了。
+
+### 8. telnet
+
+通过 telnet 协议连接目标主机，如果 telnet 连接可以在任一端口上完成即代表着两台主机间的连接良好。
+
+telnet hostname port - 使用指定的端口 telnet 主机名。这通常用来测试主机是否在线或者网络是否正常。
+
+### 9. ethtool
+
+ethtool 允许你查看和更改网卡的许多设置（不包括 Wi-Fi 网卡）。你可以管理许多高级设置，包括 tx/rx、校验及网络唤醒功能。下面是一些你可能感兴趣的基本命令：
+
+    ethtool -i //显示一个特定网卡的驱动信息，检查软件兼容性时尤其有用
+
+    ethtool -p //启动一个适配器的指定行为，比如让适配器的 LED 灯闪烁，以帮助你在多个适配器或接口中标识接口名称
+
+    ethtool -s //显示网络统计信息
+
+    ethtool speed <10|100|1000> //设置适配器的连接速度，单位是 Mbps
+
+### 10. netstat
+
+发现主机连接最有用最通用的 Linux 命令。你可以使用”netstat -g”查询该主机订阅的所有多播组（网络）
+
+    netstat -nap | grep port //将会显示使用该端口的应用程序的进程 id
+
+    netstat -a or netstat –all //将会显示包括 TCP 和 UDP 的所有连接
+
+    netstat –tcp or netstat –t //将会显示 TCP 连接
+
+    netstat –udp or netstat –u //将会显示 UDP 连接
+
+    netstat -g //将会显示该主机订阅的所有多播网络。
+
+### 11. ifup
+ifup命令用于重新启动指定的网络设备。ifup命令的格式为：ifup 网络设备文件名。
+
+ifup命令使用举例如下：
+       
+    ifup eth0  //重新启动网卡eth0。
+
+    ifup lo  //重新启动本地回绕网卡lo。
+
+### 12.ifdown
+ifdown命令用于关闭指定的网络设备。ifdown命令的格式为：ifdown 网络设备文件名。
+
+ifdown命令使用举例如下：
+
+    ifdown eth0  //关闭网卡eth0。
+
+    ifdown lo  //关闭本地回绕网卡lo。 
+        
+### 13．ethtool
+ethtool命令用来查看或者修改指定网卡的工作方式。
+
+ethtool命令的使用举例如下：
+
+         ethtool eth0 // 查看网卡eth0的工作方式，内容包括网卡的传输速度、全双工或半双工传输、网卡连接检测是否激活、网卡是否工作在自动协商状态等。
+         ethtool –s eth0 speed 10 duplex half   // 设置网卡eth0的传输速度为10M、半双工传输模式。
+         ethtool –s eth1 speed 100 duplex full autoneg off  // 设置网卡eth1的传输速度为100M、全双工、非自动协商模式。        
+### 14．mii-tool       
+mii-tool命令用于查看或修改指定网卡的通信协商方式。  
+
+mii-tool命令的使用举例如下:
+
+       mii-tool // 以简明的形式显示本机物理网卡的工作方式。
+       mii-tool –v // 以详细的形式显示本机物理网卡的工作方式。
+       mii-tool -F 10baseT-FD eth0 // 设置网卡eth0工作在10M、全双工模式下。
+       mii-tool –r eth0 // 设置网卡eth0工作在自动协商工作模式。
+       mii-tool –w eth0 // 实时监控网卡eth0工作模式的改变。
+
+### 15.route
+route命令是用来查看和设置Linux系统的路由信息，以实现与其它网络的通讯。要实现两个不同的子网之间的网络通讯，需要一台连接两个网络路由器或者同时位于两个网络的网关来实现。 
+
+在Linux系统中，我们通常设置路由是为了解决以下问题：该Linux机器在一个局域网中，局域网中有一个网关，能够让你的机器访问Internet，那么我们就需要将这台机器的IP地址设置为Linux机器的默认路由。 
+
+1） 增加一个默认路由： 
+	
+		route add 0.0.0.0 gw 网关地址 
+2） 删除一个默认路由：
+
+		 route del 0.0.0.0 gw 网关地址 
+3） 显示出当前路由表 
+
+		route
+        
+route命令的使用举例如下：
+
+     route // 显示路由信息。
+     route add –host 192.168.1.110 dev eth0  // 给网卡eth0的路由表中加入新地址192.168.1.110。
+     route add –net 192.168.1.0 netmask 255.255.255.0 gw 192.168.1.1  // 给子网192.168.1.0添加路由和网关，新增加的路由和网关地址为192.168.1.1。
+     route add default gw 192.168.0.1  // 给路由表中添加默认网关地址192.168.0.1
+     route del –host 192.168.1.110 dev eth0    // 删除网卡eth0路由表中的地址192.168.1.110。
+     route del –net 192.168.1.0 netmask 255.255.255.0 // 在路由表中删除子网192.168.1.0的路由信息。
+     route change 192.168.1.0 mask 255.255.255.0 192.168.10.100   // 将子网 192.168.1.0 的下一跃点地址设置为 192.168.10.100。
+     
+### 16．netstat
+  netstat命令用于显示本机上与IP、TCP、UDP和ICMP协议相关的统计数据，该命令经常被用于检验本机各端口的网络连接情况。
+
+netstat命令使用举例如下：
+
+    netstat // 显示本机网络连接情况。
+    netstat –a // 显示所有的有效连接信息，包括已建立的连接（ESTABLISHED）和监听的连接请求（LISTENING）。
+    netstat –ac  // 以连续的形式显示所有的有效连接信息，每隔1秒刷新1次显示，直到用户中断显示。
+    netstat -i  // 显示系统中所有网络接口信息，包括物理网卡、网卡别名和本地回环网卡。
+    netstat –n // 显示系统中所有已建立的连接。
+    netstat –r // 显示路由表。
+    netstat –ta // 显示有效的TCP连接。
+    netstat –ua // 显示有效的UDP连接。
+    netstat –s // 显示各个协议的统计信息。
+    netstat -an | grep 2811 // 显示端口号为2811的网络连接信息。
+    
+### 17. service
+service命令能够将目录“/etc/init.d/”中有关网络服务或系统服务脚本程序以一种统一的格式执行，格式为：“service 脚本程序 选项”，常用选项有：status、stop、start、restart。service命令使用举例如下：
+
+       service network status   // 查看网络的工作状况，将显示当前主机中的所有物理网卡和激活的网卡。操作结果如下：
+       service network stop // 关闭当前主机中的网卡，该操作将停止当前主机的对外网络连接。
+       service network start // 打开当前主机中的网卡，该操作使当前主机获取IP地址，进行对外网络连接。
+       service network restart // 先执行service network stop的功能，再执行service network start的功能。
+       service named status // 查看当前主机域名服务状态。 
+
+
+## 系统信息 
+arch 显示机器的处理器架构
+
+uname -m 显示机器的处理器架构
+
+uname -r 显示正在使用的内核版本 
+
+dmidecode -q 显示硬件系统部件 - (SMBIOS / DMI)
+
+hdparm -i /dev/hda 罗列一个磁盘的架构特性
+
+hdparm -tT /dev/sda 在磁盘上执行测试性读取操作
+
+cat /proc/cpuinfo 显示CPU info的信息 
+
+cat /proc/interrupts 显示中断 
+
+cat /proc/meminfo 校验内存使用 
+
+cat /proc/swaps 显示哪些swap被使用 
+
+cat /proc/version 显示内核的版本 
+
+cat /proc/net/dev 显示网络适配器及统计
+
+cat /proc/mounts 显示已加载的文件系统 
+
+lspci -tv 罗列 PCI 设备 
+
+lsusb -tv 显示 USB 设备 
+
+date 显示系统日期 
+
+cal 2007 显示2007年的日历表 
+
+date 041217002007.00 设置日期和时间 - 月日时分年.秒 
+
+clock -w 将时间修改保存到 BIOS 
+
+## 关机 (系统的关机、重启以及登出 )
+shutdown -h now 关闭系统
+
+init 0 关闭系统
+
+telinit 0 关闭系统
+
+shutdown -h hours:minutes & 按预定时间关闭系统
+
+shutdown -c 取消按预定时间关闭系统 
+
+shutdown -r now 重启
+
+reboot 重启
+
+logout 注销
+
+## 文件和目录 
+cd /home 进入 '/ home' 目录' 
+
+cd .. 返回上一级目录 
+
+cd ../.. 返回上两级目录 
+
+cd 进入个人的主目录 
+
+cd ~user1 进入个人的主目录 
+
+cd - 返回上次所在的目录 
+
+pwd 显示工作路径 
+
+ls 查看目录中的文件 
+
+ls -F 查看目录中的文件 
+
+ls -l 显示文件和目录的详细资料(权限) 
+
+ls -a 显示隐藏文件 
+
+ls *[0-9]* 显示包含数字的文件名和目录名 
+
+tree 显示文件和目录由根目录开始的树形结构
+
+lstree 显示文件和目录由根目录开始的树形结构
+
+mkdir dir1 创建一个叫做 'dir1' 的目录'
+
+mkdir dir1 dir2 同时创建两个目录 
+
+mkdir -p /tmp/dir1/dir2 创建一个目录树 
+
+rm -f file1 删除一个叫做 'file1' 的文件' 
+
+rmdir dir1 删除一个叫做 'dir1' 的目录' 
+
+rm -rf dir1 删除一个叫做 'dir1' 的目录并同时删除其内容 
+
+rm -rf dir1 dir2 同时删除两个目录及它们的内容 
+
+mv dir1 new_dir 重命名/移动 一个目录 
+
+cp file1 file2 复制一个文件 
+
+cp dir/* . 复制一个目录下的所有文件到当前工作目录
+
+cp -a /tmp/dir1 . 复制一个目录到当前工作目录
+
+cp -a dir1 dir2 复制一个目录 
+
+cp -r dir1 dir2 复制一个目录及子目录
+
+ln -s file1 lnk1 创建一个指向文件或目录的软链接 
+
+ln file1 lnk1 创建一个指向文件或目录的物理链接
+
+touch -t 0712250000 file1 修改一个文件或目录的时间戳 - (YYMMDDhhmm) 
+
+file file1 outputs the mime type of the file as text 
+iconv -l 列出已知的编码 
+
+## 文件搜索 
+find / -name file1 从 '/' 开始进入根文件系统搜索文件和目录 
+
+find / -user user1 搜索属于用户 'user1' 的文件和目录 
+
+find /home/user1 -name \*.bin 在目录 '/ home/user1' 中搜索带有'.bin' 结尾的文件 
+
+find /usr/bin -type f -atime +100 搜索在过去100天内未被使用过的执行文件 
+
+find /usr/bin -type f -mtime -10 搜索在10天内被创建或者修改过的文件 
+
+find / -name \*.rpm -exec chmod 755 '{}' \; 搜索以 '.rpm' 结尾的文件并定义其权限 
+
+find / -xdev -name \*.rpm 搜索以 '.rpm' 结尾的文件，忽略光驱、捷盘等可移动设备 
+
+locate \*.ps 寻找以 '.ps' 结尾的文件 - 先运行 'updatedb' 命令 
+
+whereis halt 显示一个二进制文件、源码或man的位置
+
+which halt 显示一个二进制文件或可执行文件的完整路径 
+
+## 挂载一个文件系统 
+mount /dev/hda2 /mnt/hda2 挂载一个叫做hda2的盘 - 确定目录 '/ mnt/hda2' 已经存在 
+
+umount /dev/hda2 卸载一个叫做hda2的盘 - 先从挂载点 '/ mnt/hda2' 退出 
+
+fuser -km /mnt/hda2 当设备繁忙时强制卸载 
+
+umount -n /mnt/hda2 运行卸载操作而不写入 /etc/mtab 文件- 当文件为只读或当磁盘写满时非常有用 
+
+mount /dev/fd0 /mnt/floppy 挂载一个软盘 
+
+mount /dev/cdrom /mnt/cdrom 挂载一个cdrom或dvdrom 
+
+mount /dev/hdc /mnt/cdrecorder 挂载一个cdrw或dvdrom 
+
+mount /dev/hdb /mnt/cdrecorder 挂载一个cdrw或dvdrom 
+
+mount -o loop file.iso /mnt/cdrom 挂载一个文件或ISO镜像文件 
+
+mount -t vfat /dev/hda5 /mnt/hda5 挂载一个Windows FAT32文件系统 
+
+mount /dev/sda1 /mnt/usbdisk 挂载一个usb 捷盘或闪存设备 
+
+mount -t smbfs -o username=user,password=pass//WinClient/share /mnt/share 挂载一个windows网络共享 
+
+## 磁盘空间 
+df -h 显示已经挂载的分区列表 
+
+ls -lSr |more 以尺寸大小排列文件和目录 
+
+du -sh dir1 估算目录 'dir1' 已经使用的磁盘空间'
+
+du -sk * | sort -rn 以容量大小为依据依次显示文件和目录的大小 
+
+rpm -q -a --qf '%10{SIZE}t%{NAME}n' | sort -k1,1n 以大小为依据依次显示已安装的rpm包所使用的空间 (fedora, redhat类系统) 
+
+dpkg-query -W -f='${Installed-Size;10}t${Package}n' | sort -k1,1n 以大小为依据显示已安装的deb包所使用的空间 (ubuntu, debian类系统) 
+
+## 用户和群组 
+groupadd group_name 创建一个新用户组 
+
+groupdel group_name 删除一个用户组
+
+groupmod -n new_group_name old_group_name 重命名一个用户组 
+
+useradd -c "Name Surname " -g admin -d /home/user1 -s /bin/bash user1 创建一个属于 "admin" 用户组的用户 
+
+useradd user1 创建一个新用户 
+
+userdel -r user1 删除一个用户 ( '-r' 排除主目录)
+
+usermod -c "User FTP" -g system -d /ftp/user1 -s /bin/nologin user1 修改用户属性 
+
+passwd 修改口令 
+
+passwd user1 修改一个用户的口令 (只允许root执行) 
+
+chage -E 2005-12-31 user1 设置用户口令的失效期限 
+
+pwck 检查 '/etc/passwd' 的文件格式和语法修正以及存在的用户 
+
+grpck 检查 '/etc/passwd' 的文件格式和语法修正以及存在的群组 
+
+newgrp group_name 登陆进一个新的群组以改变新创建文件的预设群组 
+
+## 文件的权限 - 使用 "+" 设置权限，使用 "-" 用于取消 
+
+ls -lh 显示权限 
+
+ls /tmp | pr -T5 -W$COLUMNS 将终端划分成5栏显示
+
+chmod ugo+rwx directory1 设置目录的所有人(u)、群组(g)以及其他人(o)以读（r ）、写(w)和执行(x)的权限 
+
+chmod go-rwx directory1 删除群组(g)与其他人(o)对目录的读写执行权限 
+
+chown user1 file1 改变一个文件的所有人属性 
+
+chown -R user1 directory1 改变一个目录的所有人属性并同时改变改目录下所有文件的属性 
+
+chgrp group1 file1 改变文件的群组 
+
+chown user1:group1 file1 改变一个文件的所有人和群组属性 
+
+find / -perm -u+s 罗列一个系统中所有使用了SUID控制的文件
+
+chmod u+s /bin/file1 设置一个二进制文件的 SUID 位 - 运行该文件的用户也被赋予和所有者同样的权限 
+
+chmod u-s /bin/file1 禁用一个二进制文件的 SUID位 
+
+chmod g+s /home/public 设置一个目录的SGID 位 - 类似SUID ，不过这是针对目录的 
+
+chmod g-s /home/public 禁用一个目录的 SGID 位 
+
+chmod o+t /home/public 设置一个文件的 STIKY 位 - 只允许合法所有人删除文件 
+
+chmod o-t /home/public 禁用一个目录的 STIKY 位 
+
+## 文件的特殊属性 - 使用 "+" 设置权限，使用 "-" 用于取消 
+chattr +a file1 只允许以追加方式读写文件 
+
+chattr +c file1 允许这个文件能被内核自动压缩/解压
+
+chattr +d file1 在进行文件系统备份时，dump程序将忽略这个文件 
+
+chattr +i file1 设置成不可变的文件，不能被删除、修改、重命名或者链接 
+
+chattr +s file1 允许一个文件被安全地删除 
+
+chattr +S file1 一旦应用程序对这个文件执行了写操作，使系统立刻把修改的结果写到磁盘 
+
+chattr +u file1 若文件被删除，系统会允许你在以后恢复这个被删除的文件 
+
+lsattr 显示特殊的属性 
+
+## 打包和压缩文件 
+bunzip2 file1.bz2 解压一个叫做 'file1.bz2'的文件 
+
+bzip2 file1 压缩一个叫做 'file1' 的文件 
+
+gunzip file1.gz 解压一个叫做 'file1.gz'的文件 
+
+gzip file1 压缩一个叫做 'file1'的文件 
+
+gzip -9 file1 最大程度压缩 
+
+rar a file1.rar test_file 创建一个叫做 'file1.rar' 的包 
+
+rar a file1.rar file1 file2 dir1 同时压缩 'file1', 'file2' 以及目录 'dir1' 
+
+rar x file1.rar 解压rar包 
+
+unrar x file1.rar 解压rar包 
+
+tar -cvf archive.tar file1 创建一个非压缩的 tarball 
+
+tar -cvf archive.tar file1 file2 dir1 创建一个包含了 'file1', 'file2' 以及 'dir1'的档案文件 
+
+tar -tf archive.tar 显示一个包中的内容 
+
+tar -xvf archive.tar 释放一个包 
+
+tar -xvf archive.tar -C /tmp 将压缩包释放到 /tmp目录下 
+
+tar -cvfj archive.tar.bz2 dir1 创建一个bzip2格式的压缩包 
+
+tar -jxvf archive.tar.bz2 解压一个bzip2格式的压缩包 
+
+tar -cvfz archive.tar.gz dir1 创建一个gzip格式的压缩包 
+
+tar -zxvf archive.tar.gz 解压一个gzip格式的压缩包 
+
+zip file1.zip file1 创建一个zip格式的压缩包 
+
+zip -r file1.zip file1 file2 dir1 将几个文件和目录同时压缩成一个zip格式的压缩包 
+
+unzip file1.zip 解压一个zip格式压缩包 
+
+## RPM 包 - （Fedora, Redhat及类似系统）
+rpm -ivh package.rpm 安装一个rpm包 
+
+rpm -ivh --nodeeps package.rpm 安装一个rpm包而忽略依赖关系警告
+
+rpm -U package.rpm 更新一个rpm包但不改变其配置文件
+
+rpm -F package.rpm 更新一个确定已经安装的rpm包 
+
+rpm -e package_name.rpm 删除一个rpm包 
+
+rpm -qa 显示系统中所有已经安装的rpm包 
+
+rpm -qa | grep httpd 显示所有名称中包含 "httpd" 字样的rpm包 
+
+rpm -qi package_name 获取一个已安装包的特殊信息 
+
+rpm -qg "System Environment/Daemons" 显示一个组件的rpm包 
+
+rpm -ql package_name 显示一个已经安装的rpm包提供的文件列表 
+
+rpm -qc package_name 显示一个已经安装的rpm包提供的配置文件列表 
+
+rpm -q package_name --whatrequires 显示与一个rpm包存在依赖关系的列表 
+
+rpm -q package_name --whatprovides 显示一个rpm包所占的体积 
+
+rpm -q package_name --scripts 显示在安装/删除期间所执行的脚本l 
+
+rpm -q package_name --changelog 显示一个rpm包的修改历史 
+
+rpm -qf /etc/httpd/conf/httpd.conf 确认所给的文件由哪个rpm包所提供 
+
+rpm -qp package.rpm -l 显示由一个尚未安装的rpm包提供的文件列表 
+
+rpm --import /media/cdrom/RPM-GPG-KEY 导入公钥数字证书 
+
+rpm --checksig package.rpm 确认一个rpm包的完整性 
+
+rpm -qa gpg-pubkey 确认已安装的所有rpm包的完整性 
+
+rpm -V package_name 检查文件尺寸、 许可、类型、所有者、群组、MD5检查以及最后修改时间 
+
+rpm -Va 检查系统中所有已安装的rpm包- 小心使用 
+
+rpm -Vp package.rpm 确认一个rpm包还未安装 
+
+rpm2cpio package.rpm | cpio --extract --make-directories *bin* 从一个rpm包运行可执行文件
+
+rpm -ivh /usr/src/redhat/RPMS/`arch`/package.rpm 从一个rpm源码安装一个构建好的包
+
+rpmbuild --rebuild package_name.src.rpm 从一个rpm源码构建一个 rpm 包 
+
+## YUM 软件包升级器 - （Fedora, RedHat及类似系统）
+yum install package_name 下载并安装一个rpm包 
+
+yum localinstall package_name.rpm 将安装一个rpm包，使用你自己的软件仓库为你解决所有依赖关系
+
+yum update package_name.rpm 更新当前系统中所有安装的rpm包 
+
+yum update package_name 更新一个rpm包 
+
+yum remove package_name 删除一个rpm包 
+
+yum list 列出当前系统中安装的所有包 
+
+yum search package_name 在rpm仓库中搜寻软件包 
+
+yum clean packages 清理rpm缓存删除下载的包 
+
+yum clean headers 删除所有头文件 
+
+yum clean all 删除所有缓存的包和头文件 
+
+## DEB 包 (Debian, Ubuntu 以及类似系统) 
+dpkg -i package.deb 安装/更新一个 deb 包 
+
+dpkg -r package_name 从系统删除一个 deb 包 
+
+dpkg -l 显示系统中所有已经安装的 deb 包 
+
+dpkg -l | grep httpd 显示所有名称中包含 "httpd" 字样的deb包 
+
+dpkg -s package_name 获得已经安装在系统中一个特殊包的信息 
+
+dpkg -L package_name 显示系统中已经安装的一个deb包所提供的文件列表 
+
+dpkg --contents package.deb 显示尚未安装的一个包所提供的文件列表 
+
+dpkg -S /bin/ping 确认所给的文件由哪个deb包提供 
+
+## APT 软件工具 (Debian, Ubuntu 以及类似系统) 
+apt-get install package_name 安装/更新一个 deb 包 
+
+apt-cdrom install package_name 从光盘安装/更新一个 deb 包
+
+apt-get update 升级列表中的软件包 
+
+apt-get upgrade 升级所有已安装的软件 
+
+apt-get remove package_name 从系统删除一个deb包 
+
+apt-get check 确认依赖的软件仓库正确 
+
+apt-get clean 从下载的软件包中清理缓存 
+
+apt-cache search searched-package 返回包含所要搜索字符串的软件包名称 
+
+## 查看文件内容 
+cat file1 从第一个字节开始正向查看文件的内容 
+
+tac file1 从最后一行开始反向查看一个文件的内容 
+
+more file1 查看一个长文件的内容 
+
+less file1 类似于 'more' 命令，但是它允许在文件中和正向操作一样的反向操作 
+
+head -2 file1 查看一个文件的前两行 
+
+tail -2 file1 查看一个文件的最后两行 
+
+tail -f /var/log/messages 实时查看被添加到一个文件中的内容 
+
+## 文本处理 
+cat file1 | command( sed, grep, awk, grep, etc...) > result.txt 合并一个文件的详细说明文本，并将简介写入一个新文件中 
+
+cat file1 | command( sed, grep, awk, grep, etc...) >> result.txt 合并一个文件的详细说明文本，并将简介写入一个已有的文件中 
+
+grep Aug /var/log/messages 在文件 '/var/log/messages'中查找关键词"Aug" 
+
+grep ^Aug /var/log/messages 在文件 '/var/log/messages'中查找以"Aug"开始的词汇 
+
+grep [0-9] /var/log/messages 选择 '/var/log/messages' 文件中所有包含数字的行 
+
+grep Aug -R /var/log/* 在目录 '/var/log' 及随后的目录中搜索字符串"Aug" 
+
+sed 's/stringa1/stringa2/g' example.txt 将example.txt文件中的 "string1" 替换成 "string2" 
+
+sed '/^$/d' example.txt 从example.txt文件中删除所有空白行 
+
+sed '/ *#/d; /^$/d' example.txt 从example.txt文件中删除所有注释和空白行 
+
+echo 'esempio' | tr '[:lower:]' '[:upper:]' 合并上下单元格内容 
+
+sed -e '1d' result.txt 从文件example.txt 中排除第一行 
+
+sed -n '/stringa1/p' 查看只包含词汇 "string1"的行 
+
+sed -e 's/ *$//' example.txt 删除每一行最后的空白字符 
+
+sed -e 's/stringa1//g' example.txt 从文档中只删除词汇 "string1" 并保留剩余全部 
+
+sed -n '1,5p;5q' example.txt 查看从第一行到第5行内容 
+
+sed -n '5p;5q' example.txt 查看第5行 
+
+sed -e 's/00*/0/g' example.txt 用单个零替换多个零 
+
+cat -n file1 标示文件的行数 
+
+cat example.txt | awk 'NR%2==1' 删除example.txt文件中的所有偶数行 
+
+echo a b c | awk '{print $1}' 查看一行第一栏
+
+echo a b c | awk '{print $1,$3}' 查看一行的第一和第三栏
+
+paste file1 file2 合并两个文件或两栏的内容 
+
+paste -d '+' file1 file2 合并两个文件或两栏的内容，中间用"+"区分
+
+sort file1 file2 排序两个文件的内容 
+
+sort file1 file2 | uniq 取出两个文件的并集(重复的行只保留一份)
+
+sort file1 file2 | uniq -u 删除交集，留下其他的行 
+
+sort file1 file2 | uniq -d 取出两个文件的交集(只留下同时存在于两个文件中的文件)
+
+comm -1 file1 file2 比较两个文件的内容只删除 'file1' 所包含的内容
+
+comm -2 file1 file2 比较两个文件的内容只删除 'file2' 所包含的内容
+
+comm -3 file1 file2 比较两个文件的内容只删除两个文件共有的部分 
+
+## 字符设置和文件格式转换
+dos2unix filedos.txt fileunix.txt 将一个文本文件的格式从MSDOS转换成UNIX
+
+unix2dos fileunix.txt filedos.txt 将一个文本文件的格式从UNIX转换成MSDOS
+
+recode ..HTML < page.txt > page.html 将一个文本文件转换成html 
+
+recode -l | more 显示所有允许的转换格式 
+
+## 文件系统分析 
+badblocks -v /dev/hda1 检查磁盘hda1上的坏磁块 
+
+fsck /dev/hda1 修复/检查hda1磁盘上linux文件系统的完整性
+
+fsck.ext2 /dev/hda1 修复/检查hda1磁盘上ext2文件系统的完整性 
+
+e2fsck /dev/hda1 修复/检查hda1磁盘上ext2文件系统的完整性 
+
+e2fsck -j /dev/hda1 修复/检查hda1磁盘上ext3文件系统的完整性
+
+fsck.ext3 /dev/hda1 修复/检查hda1磁盘上ext3文件系统的完整性
+
+fsck.vfat /dev/hda1 修复/检查hda1磁盘上fat文件系统的完整性 
+
+fsck.msdos /dev/hda1 修复/检查hda1磁盘上dos文件系统的完整性 
+
+dosfsck /dev/hda1 修复/检查hda1磁盘上dos文件系统的完整性 
+
+## 初始化一个文件系统 
+mkfs /dev/hda1 在hda1分区创建一个文件系统 
+
+mke2fs /dev/hda1 在hda1分区创建一个linux ext2的文件系统 
+
+mke2fs -j /dev/hda1 在hda1分区创建一个linux ext3(日志型)的文件系统 
+
+mkfs -t vfat 32 -F /dev/hda1 创建一个 FAT32 文件系统 
+
+fdformat -n /dev/fd0 格式化一个软盘 
+
+mkswap /dev/hda3 创建一个swap文件系统 
+
+## SWAP文件系统 
+mkswap /dev/hda3 创建一个swap文件系统
+
+swapon /dev/hda3 启用一个新的swap文件系统 
+
+swapon /dev/hda2 /dev/hdb3 启用两个swap分区 
+
+## 备份 
+dump -0aj -f /tmp/home0.bak /home 制作一个 '/home' 目录的完整备份 
+
+dump -1aj -f /tmp/home0.bak /home 制作一个 '/home' 目录的交互式备份 
+
+restore -if /tmp/home0.bak 还原一个交互式备份 
+
+rsync -rogpav --delete /home /tmp 同步两边的目录 
+
+rsync -rogpav -e ssh --delete /home ip_address:/tmp 通过SSH通道rsync 
+
+rsync -az -e ssh --delete ip_addr:/home/public /home/local 通过ssh和压缩将一个远程目录同步到本地目录
+
+rsync -az -e ssh --delete /home/local ip_addr:/home/public 通过ssh和压缩将本地目录同步到远程目录 
+
+dd bs=1M if=/dev/hda | gzip | ssh user@ip_addr 'dd of=hda.gz' 通过ssh在远程主机上执行一次备份本地磁盘的操作
+
+dd if=/dev/sda of=/tmp/file1 备份磁盘内容到一个文件 
+
+tar -Puf backup.tar /home/user 执行一次对 '/home/user' 目录的交互式备份操作 
+
+( cd /tmp/local/ && tar c . ) | ssh -C user@ip_addr 'cd /home/share/ && tar x -p' 通过ssh在远程目录中复制一个目录内容 
+
+( tar c /home ) | ssh -C user@ip_addr 'cd /home/backup-home && tar x -p' 通过ssh在远程目录中复制一个本地目录 
+
+tar cf - . | (cd /tmp/backup ; tar xf - ) 本地将一个目录复制到另一个地方，保留原有权限及链接 
+
+find /home/user1 -name '*.txt' | xargs cp -av --target-directory=/home/backup/ --parents 从一个目录查找并复制所有以 '.txt' 结尾的文件到另一个目录 
+
+find /var/log -name '*.log' | tar cv --files-from=- | bzip2 > log.tar.bz2 查找所有以 '.log' 结尾的文件并做成一个bzip包 
+
+dd if=/dev/hda of=/dev/fd0 bs=512 count=1 做一个将 MBR (Master Boot Record)内容复制到软盘的动作 
+
+dd if=/dev/fd0 of=/dev/hda bs=512 count=1 从已经保存到软盘的备份中恢复MBR内容 
+
+## 光盘 
+cdrecord -v gracetime=2 dev=/dev/cdrom -eject blank=fast -force 清空一个可复写的光盘内容 
+
+mkisofs /dev/cdrom > cd.iso 在磁盘上创建一个光盘的iso镜像文件 
+
+mkisofs /dev/cdrom | gzip > cd_iso.gz 在磁盘上创建一个压缩了的光盘iso镜像文件 
+
+mkisofs -J -allow-leading-dots -R -V "Label CD" -iso-level 4 -o ./cd.iso data_cd 创建一个目录的iso镜像文件
+
+cdrecord -v dev=/dev/cdrom cd.iso 刻录一个ISO镜像文件 
+
+gzip -dc cd_iso.gz | cdrecord dev=/dev/cdrom - 刻录一个压缩了的ISO镜像文件 
+
+mount -o loop cd.iso /mnt/iso 挂载一个ISO镜像文件 
+
+cd-paranoia -B 从一个CD光盘转录音轨到 wav 文件中 
+
+cd-paranoia -- "-3" 从一个CD光盘转录音轨到 wav 文件中（参数-3） 
+
+cdrecord --scanbus 扫描总线以识别scsi通道 
+
+dd if=/dev/hdc | md5sum 校验一个设备的md5sum编码，例如一张 CD
