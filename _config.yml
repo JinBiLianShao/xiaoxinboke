@@ -109,4 +109,10 @@ neat_js:
     - '**/*.min.js'
     - '**/jquery.fancybox.pack.js'
     - '**/index.js'
-
+prism_plugin:
+  enable: true
+  line_number: false
+  preprocess: true
+  continuous: true
+  theme: 'default'
+  languages: []
