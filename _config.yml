@@ -69,22 +69,23 @@ auto-issue:
   withGitalk: false
   delay: 2000
 
-  highlight:
-    enable: false
-    auto_detect: false
-    line_number: true
-    line_threshold: 0
-    tab_replace: ''
-    exclude_languages:
-      - example
-    wrap: true
-    hljs: false
-  prismjs:
-    enable: false
-    preprocess: true
-    line_number: true
-    line_threshold: 0
-    tab_replace: ''
+highlight:
+  enable: true
+  auto_detect: false
+  line_number: true
+  line_threshold: 0
+  tab_replace: ''
+  exclude_languages:
+    - example
+  wrap: true
+  hljs: false
+
+prismjs:
+  enable: true
+  preprocess: true
+  line_number: true
+  line_threshold: 0
+  tab_replace: ''
 
 
 # hexo-neat
@@ -109,10 +110,4 @@ neat_js:
     - '**/*.min.js'
     - '**/jquery.fancybox.pack.js'
     - '**/index.js'
-prism_plugin:
-  enable: true
-  line_number: true
-  preprocess: true
-  continuous: true
-  theme: 'okaidia'
-  languages: []
+
