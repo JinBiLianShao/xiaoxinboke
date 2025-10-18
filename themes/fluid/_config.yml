@@ -232,10 +232,12 @@ font:
 # 指定自定义 .js 文件路径，支持列表；路径是相对 source 目录，如 /js/custom.js 对应存放目录 source/js/custom.js
 # Specify the path of your custom js file, support list. The path is relative to the source directory, such as `/js/custom.js` corresponding to the directory `source/js/custom.js`
 custom_js:
+  - /js/disable-math-rendering.js
 
 # 指定自定义 .css 文件路径，用法和 custom_js 相同
 # The usage is the same as custom_js
 custom_css:
+  - /css/custom.css
 
 # 网页访问统计
 # Analysis of website visitors
@@ -424,7 +426,7 @@ footer:
   # 页脚第一行文字的 HTML，建议保留 Fluid 的链接，用于向更多人推广本主题
   # HTML of the first line of the footer, it is recommended to keep the Fluid link to promote this theme to more people
   content: '
-    <a href="https://jinbilianshao.github.io/xiaoxin" target="_blank" rel="nofollow noopener"><span>版权所有者：连思鑫</span></a>
+    <a href="/xiaoxin" target="_blank" rel="nofollow noopener"><span>版权所有者：连思鑫</span></a>
     <i class="iconfont icon-love"></i>
     <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a>
   '
@@ -706,8 +708,7 @@ post:
   # 数学公式，开启之前需要更换 Markdown 渲染器，否则复杂公式会有兼容问题，具体请见：https://hexo.fluid-dev.com/docs/guide/##latex-数学公式
   # Mathematical formula. If enable, you need to change the Markdown renderer, see: https://hexo.fluid-dev.com/docs/en/guide/#math
   math:
-    # 开启后文章默认可用，自定义页面如需使用，需在 Front-matter 中指定 `math: true`
-    # If you want to use math on the custom page, you need to set `math: true` in Front-matter
+    # 修复：保持 false，因为我们使用 _config.yml 中的 markdown-it 插件在服务端渲染
     enable: false
 
     # 开启后，只有在文章 Front-matter 里指定 `math: true` 才会在文章页启动公式转换，以便在页面不包含公式时提高加载速度
@@ -715,7 +716,7 @@ post:
     specific: false
 
     # Options: mathjax | katex
-    engine: mathjax
+    engine: katex
 
   # 流程图，基于 mermaid-js，具体请见：https://hexo.fluid-dev.com/docs/guide/#mermaid-流程图
   # Flow chart, based on mermaid-js, see: https://hexo.fluid-dev.com/docs/en/guide/#mermaid
@@ -879,6 +880,7 @@ cusdis:
 # Based on GitHub Discussions, similar to Utterances
 # See: https://giscus.app/
 giscus:
+  # 请按 giscus 官网指引填入你自己的配置
   repo:
   repo-id:
   category:
@@ -1080,9 +1082,9 @@ static_prefix:
 
   nprogress: https://lib.baomitu.com/nprogress/0.2.0/
 
-  mathjax: https://lib.baomitu.com/mathjax/3.2.1/
-
-  katex: https://lib.baomitu.com/KaTeX/0.15.6/
+#  mathjax: https://lib.baomitu.com/mathjax/3.2.1/
+#
+#  katex: https://lib.baomitu.com/KaTeX/0.15.6/
 
   busuanzi: https://busuanzi.ibruce.info/busuanzi/2.3/
 
@@ -1101,3 +1103,33 @@ static_prefix:
   twikoo: https://lib.baomitu.com/twikoo/1.5.11/
 
   hint: https://lib.baomitu.com/hint.css/2.7.0/
+
+# 在任意位置添加以下配置
+custom_html: |
+  <style>
+  /* 防止数学公式重复渲染 */
+  .katex-html {
+    display: none !important;
+  }
+
+  .katex-mathml {
+    display: inline-block !important;
+  }
+
+  .katex-display {
+    margin: 1em 0 !important;
+    text-align: center !important;
+    overflow: auto hidden !important;
+  }
+
+  .katex {
+    font-size: 1.1em !important;
+    line-height: 1.2 !important;
+  }
+
+  /* 隐藏任何可能的重复元素 */
+  .katex-display .katex:not(:first-child),
+  .katex:not(:first-child) {
+    display: none !important;
+  }
+  </style>

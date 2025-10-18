@@ -1,0 +1,25 @@
+/* 数学公式重复渲染修复 */
+.katex-html {
+    display: none !important;
+}
+
+.katex-mathml {
+    display: inline-block !important;
+}
+
+.katex-display {
+    margin: 1em 0 !important;
+    text-align: center !important;
+    overflow: auto hidden !important;
+}
+
+.katex {
+    font-size: 1.1em !important;
+    line-height: 1.2 !important;
+}
+
+/* 防止任何客户端渲染尝试 */
+script[src*="katex"],
+script[src*="mathjax"] {
+    display: none !important;
+}

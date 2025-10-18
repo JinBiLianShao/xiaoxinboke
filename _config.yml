@@ -69,8 +69,9 @@ auto-issue:
   withGitalk: false
   delay: 2000
 
+# 已禁用 Hexo 的代码高亮，交由 Fluid 主题处理
 highlight:
-  enable: true
+  enable: false
   auto_detect: false
   line_number: true
   line_threshold: 0
@@ -81,7 +82,7 @@ highlight:
   hljs: false
 
 prismjs:
-  enable: true
+  enable: false
   preprocess: true
   line_number: true
   line_threshold: 0
@@ -111,3 +112,49 @@ neat_js:
     - '**/jquery.fancybox.pack.js'
     - '**/index.js'
 
+markdown:
+  preset: 'default'
+  render:
+    html: true
+    breaks: false
+    linkify: true
+  plugins:
+    - '@traptitech/markdown-it-katex'
+
+# 新增：看板娘配置
+live2d:
+  enable: true
+  # scriptFrom: local # 本地加载，需要 npm install hexo-helper-live2d
+  pluginRootPath: live2dw/ # 插件在站点上的根目录(相对路径)
+  pluginJsPath: lib/ # 脚本文件相对与插件根目录路径
+  pluginModelPath: assets/ # 模型文件相对与插件根目录路径
+  tagMode: false # 是否仅在有 live2d 标签的页面加载
+  debug: false # 是否在控制台输出日志
+  model:
+    # 使用 npm install live2d-widget-model-shizuku 安装
+    use: live2d-widget-model-shizuku
+    scale: 1
+    hHeadPos: 0.5
+    vHeadPos: 0.618
+  display:
+    position: right # 显示在右下角
+    width: 150
+    height: 300
+    hOffset: 0
+    vOffset: -20
+  mobile:
+    show: true # 移动端是否显示
+    scale: 0.5
+  react:
+    opacityDefault: 0.7
+    opacityOnHover: 0.9
+
+# 指定自定义 .js 文件路径，支持列表；路径是相对 source 目录，如 /js/custom.js 对应存放目录 source/js/custom.js
+# Specify the path of your custom js file, support list. The path is relative to the source directory, such as `/js/custom.js` corresponding to the directory `source/js/custom.js`
+custom_js:
+  - /js/disable-math-rendering.js
+
+# 指定自定义 .css 文件路径，用法和 custom_js 相同
+# The usage is the same as custom_js
+custom_css:
+  - /css/custom.css
