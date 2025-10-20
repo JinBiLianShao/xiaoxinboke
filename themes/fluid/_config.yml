@@ -1126,10 +1126,4 @@ custom_html: |
     font-size: 1.1em !important;
     line-height: 1.2 !important;
   }
-
-  /* 隐藏任何可能的重复元素 */
-  .katex-display .katex:not(:first-child),
-  .katex:not(:first-child) {
-    display: none !important;
-  }
   </style>
